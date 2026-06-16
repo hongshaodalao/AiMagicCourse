@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>AI小魔法师 - 3-6岁亲子共学AI启蒙课程</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Exo:wght@400;500;600;700;800;900&family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #000000;
+  --bg-card: #0C0C0C;
+  --bg-card-alt: #18181B;
+  --bg-hover: #27272A;
+  --fg: #FAFAFA;
+  --fg-muted: #94A3B8;
+  --border: #3F3F46;
+  --accent: #F59E0B;
+  --success: #22C55E;
+  --danger: #EF4444;
+  --padding: clamp(12px, 2vw, 20px);
+  --padding-lg: clamp(20px, 4vw, 40px);
+  --gap: clamp(8px, 1.5vw, 16px);
+  --gap-lg: clamp(16px, 3vw, 32px);
+  --font-xs: clamp(12px, 1.2vw, 14px);
+  --font-sm: clamp(14px, 1.6vw, 18px);
+  --font-base: clamp(16px, 2vw, 22px);
+  --font-lg: clamp(20px, 2.5vw, 26px);
+  --font-xl: clamp(24px, 3.5vw, 32px);
+  --font-2xl: clamp(28px, 4.5vw, 40px);
+  --font-3xl: clamp(40px, 7vw, 64px);
+}
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 100%; height: 100%; background: var(--bg); overflow: hidden; }
+body {
+  font-family: 'Roboto Mono', monospace;
+  color: var(--fg);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ===== App Shell ===== */
+.app-shell { width: 100%; height: 100%; display: flex; flex-direction: column; background: var(--bg); }
+.page { display: none; flex-direction: column; flex: 1; height: 100%; overflow: hidden; }
+.page.active { display: flex; }
+
+/* ===== HUD Brackets (desktop) ===== */
+.hud-bracket {
+  position: absolute; width: clamp(0px, 4vw, 60px); height: clamp(0px, 4vw, 60px);
+  pointer-events: none; display: none;
+}
+.hud-bracket::before, .hud-bracket::after { content:''; position:absolute; background:var(--border); }
+.hud-bracket::before { width:55%; height:2px; } .hud-bracket::after { width:2px; height:55%; }
+.hud-tl { top:var(--padding-lg); left:var(--padding-lg); }
+.hud-tl::before{top:0;left:0}.hud-tl::after{top:0;left:0}
+.hud-tr { top:var(--padding-lg); right:var(--padding-lg); }
+.hud-tr::before{top:0;right:0}.hud-tr::after{top:0;right:0}
+.hud-bl { bottom:var(--padding-lg); left:var(--padding-lg); }
+.hud-bl::before{bottom:0;left:0}.hud-bl::after{bottom:0;left:0}
+.hud-br { bottom:var(--padding-lg); right:var(--padding-lg); }
+.hud-br::before{bottom:0;right:0}.hud-br::after{bottom:0;right:0}
+
+/* ===== Navbar ===== */
+.navbar {
+  display:flex;align-items:center;height:clamp(44px,6vh,64px);padding:0 var(--padding);
+  gap:var(--gap);flex-shrink:0;border-bottom:1px solid var(--bg-card);min-height:44px;
+}
+.nav-spacer{flex:1}.nav-title{font-family:'Exo',sans-serif;font-size:var(--font-lg);font-weight:700;letter-spacing:2px}
+.nav-subtitle{font-size:var(--font-sm);font-weight:700;font-family:'Exo',sans-serif;letter-spacing:1px}
+
+/* ===== Buttons ===== */
+.btn {
+  font-family:'Roboto Mono',monospace;font-size:var(--font-sm);font-weight:500;border:none;
+  background:transparent;color:var(--fg-muted);padding:clamp(6px,1vh,12px) clamp(10px,2vw,20px);
+  cursor:pointer;transition:all 0.2s ease;display:inline-flex;align-items:center;
+  gap:clamp(4px,0.5vw,8px);white-space:nowrap;min-height:40px;min-width:40px;
+}
+.btn:active{transform:scale(.96)}
+.btn-primary{background:var(--fg);color:var(--bg);font-weight:700;letter-spacing:1px}
+.btn-primary:active{background:#e0e0e0}
+.btn-outline{background:var(--bg-card);border:1px solid var(--border);color:var(--fg-muted)}
+.btn-outline:active{border-color:var(--fg-muted);background:var(--bg-hover)}
+.btn-disabled{opacity:.25;pointer-events:none}
+
+/* ===== Home Page ===== */
+.home-page{position:relative;display:flex;flex-direction:column;flex:1}
+.home-content{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:var(--gap-lg);text-align:center;padding:var(--padding-lg)
+}
+.home-logo{font-size:var(--font-3xl);line-height:1}
+.home-title{font-family:'Exo',sans-serif;font-size:var(--font-3xl);font-weight:800;letter-spacing:clamp(2px,.4vw,4px);line-height:1.1}
+.home-subtitle{font-size:var(--font-base);color:var(--fg-muted)}
+.home-divider{width:clamp(60px,10vw,100px);height:2px;background:var(--border)}
+.home-desc{font-size:var(--font-sm);color:var(--fg-muted);max-width:480px}
+.home-cta{margin-top:var(--gap);padding:clamp(12px,2vh,16px) clamp(24px,4vw,32px);font-size:var(--font-base);}
+
+/* Hidden reset */
+.home-reset {
+  position: absolute; bottom: 8px; right: 12px;
+  font-size: 9px; color: var(--border);
+  cursor: pointer; opacity: 0.2; transition: opacity .3s;
+  user-select: none; padding: 4px 8px;
+  letter-spacing: 1px; z-index: 10;
+  pointer-events: auto;
+}
+.home-reset:hover { opacity: 0.7; color: var(--fg-muted); }
+.reset-modal {
+  display:none; position:fixed; top:0;left:0;width:100%;height:100%;
+  background:rgba(0,0,0,.85);z-index:999;align-items:center;justify-content:center;
+}
+.reset-modal.show{display:flex}
+.reset-box{
+  background:var(--bg-card);border:1px solid var(--border);
+  padding:clamp(20px,4vw,32px);gap:var(--gap);min-width:clamp(260px,50vw,360px);
+  display:flex;flex-direction:column;
+}
+.reset-box input{
+  background:var(--bg);border:1px solid var(--border);color:var(--fg);
+  padding:clamp(8px,1vh,12px);font-family:'Roboto Mono',monospace;font-size:var(--font-base);
+  text-align:center;letter-spacing:8px;outline:none;
+}
+.reset-box input:focus{border-color:var(--fg)}
+.reset-error{font-size:var(--font-xs);color:var(--danger);display:none;text-align:center}
+
+/* ===== Directory Page ===== */
+.dir-body{flex:1;padding:var(--padding);overflow-y:auto;overflow-x:hidden}
+.dir-section{margin-bottom:clamp(12px,2vh,24px)}
+.dir-header{
+  display:flex;align-items:center;gap:clamp(6px,1vw,12px);padding:clamp(10px,1.5vh,16px);
+  background:var(--bg-card);margin-bottom:var(--gap);cursor:pointer;
+  transition:background .2s ease;min-height:44px;
+}
+.dir-header:active{background:var(--bg-hover)}
+.dir-stage-num{font-family:'Exo',sans-serif;font-size:var(--font-xl);font-weight:700;color:var(--border);flex-shrink:0}
+.dir-stage-title{font-family:'Exo',sans-serif;font-size:var(--font-base);font-weight:700;letter-spacing:1px;flex:1}
+.dir-stage-weeks{font-size:var(--font-xs);color:var(--fg-muted)}
+.dir-arrow{font-size:var(--font-xs);color:var(--fg-muted);transition:transform .3s}
+.dir-section.expanded .dir-arrow{transform:rotate(180deg)}
+.dir-weeks-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(clamp(140px,22vw,220px),1fr));
+  gap:var(--gap);max-height:0;overflow:hidden;transition:max-height .4s;
+}
+.dir-section.expanded .dir-weeks-grid{max-height:600px}
+.week-card{
+  background:var(--bg-card);padding:clamp(10px,1.5vh,16px);cursor:pointer;
+  transition:all .2s;border:1px solid transparent;min-height:80px;
+  display:flex;flex-direction:column;gap:6px;
+}
+.week-card:active{border-color:var(--border);background:var(--bg-hover)}
+.week-card.active{background:var(--bg-card-alt);border-color:var(--accent)}
+.week-num{font-size:var(--font-xs);letter-spacing:2px;color:var(--border)}
+.week-card-title{font-family:'Exo',sans-serif;font-size:var(--font-sm);font-weight:700;flex:1}
+.week-status{display:flex;align-items:center;gap:6px;font-size:clamp(9px,.9vw,11px);letter-spacing:1px}
+.week-status-dot{width:clamp(6px,.6vw,8px);height:clamp(6px,.6vw,8px);border-radius:50%;flex-shrink:0}
+.dot-completed{background:var(--success)}.dot-inprogress{background:var(--accent)}.dot-pending{background:var(--border)}.dot-locked{background:var(--border)}
+.status-completed{color:var(--success)}.status-inprogress{color:var(--accent)}.status-pending{color:var(--border)}.status-locked{color:var(--border)}
+.week-locked{opacity:0.4;cursor:not-allowed;pointer-events:none}
+
+/* ===== Content Page ===== */
+.content-page{display:flex;flex-direction:column;flex:1}
+.content-body{
+  flex:1;overflow-y:auto;padding:var(--padding-lg);padding-bottom:clamp(10px,2vh,20px);
+}
+.content-step-header{
+  display:flex;align-items:center;gap:var(--gap);margin-bottom:var(--gap-lg);
+  flex-wrap:wrap;
+}
+.content-icon{font-size:clamp(28px,4vw,40px);line-height:1;flex-shrink:0}
+.content-step-info{flex:1;min-width:150px}
+.content-label{
+  display:inline-block;padding:clamp(4px,.6vh,8px) clamp(8px,1.5vw,14px);
+  background:var(--bg-card);font-size:var(--font-xs);letter-spacing:3px;color:var(--accent);
+  margin-bottom:clamp(4px,.5vh,8px);
+}
+.content-title{
+  font-family:'Exo',sans-serif;font-size:var(--font-xl);font-weight:700;
+  letter-spacing:1px;line-height:1.3;
+}
+.content-bar{
+  width:clamp(200px,40vw,320px);height:clamp(3px,.5vh,4px);
+  background:var(--bg-card-alt);margin-bottom:var(--gap-lg);
+}
+.content-bar-fill{height:100%;background:var(--fg);transition:width .3s}
+.content-full{
+  font-size:var(--font-sm);line-height:1.85;color:var(--fg-muted);
+}
+.content-full strong, .content-full b{color:var(--fg);font-weight:700}
+.content-full em{color:var(--accent);font-style:normal}
+.content-full h3{
+  font-family:'Exo',sans-serif;font-size:var(--font-lg);font-weight:700;
+  color:var(--fg);margin:clamp(16px,2vh,24px) 0 clamp(8px,1vh,12px);
+  letter-spacing:1px;border-bottom:1px solid var(--bg-card);padding-bottom:clamp(6px,.8vh,10px);
+}
+.content-full h4{
+  font-family:'Exo',sans-serif;font-size:var(--font-base);font-weight:600;
+  color:var(--fg);margin:clamp(12px,1.5vh,16px) 0 clamp(4px,.5vh,8px);
+}
+.content-full p{margin:clamp(4px,.5vh,8px) 0}
+.content-full ul, .content-full ol{
+  margin:clamp(6px,.8vh,10px) 0;padding-left:clamp(16px,3vw,24px);
+}
+.content-full li{margin:clamp(2px,.3vh,4px) 0}
+.content-full .quote{
+  background:var(--bg-card);border-left:2px solid var(--accent);
+  padding:clamp(8px,1vh,14px) clamp(10px,1.5vw,16px);
+  margin:clamp(8px,1vh,14px) 0;
+  font-size:var(--font-sm);line-height:1.8;
+}
+.content-full .highlight{
+  background:var(--bg-card-alt);padding:clamp(8px,1vh,14px);border:1px solid var(--border);
+  margin:clamp(8px,1vh,14px) 0;font-size:var(--font-sm);
+}
+.content-full .table-wrap{
+  margin:clamp(8px,1vh,14px) 0;overflow-x:auto;
+}
+.content-full table{
+  width:100%;border-collapse:collapse;font-size:var(--font-xs);
+}
+.content-full td, .content-full th{
+  border:1px solid var(--border);padding:clamp(6px,.8vh,10px) clamp(8px,1vw,12px);
+  text-align:left;
+}
+.content-full th{background:var(--bg-card);color:var(--fg);font-weight:700}
+.content-full .hr{height:1px;background:var(--bg-card);margin:clamp(12px,1.5vh,20px) 0}
+.content-bottom{
+  padding:var(--padding);display:flex;justify-content:center;
+  gap:var(--gap);border-top:1px solid var(--bg-card);flex-shrink:0;flex-wrap:wrap;
+}
+.content-bottom .btn{min-height:40px}
+.step-indicator{font-size:var(--font-sm);letter-spacing:2px;color:var(--accent)}
+
+/* ===== Progress Page ===== */
+.progress-body{flex:1;padding:var(--padding);overflow-y:auto}
+.progress-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--gap);margin-bottom:var(--gap-lg)}
+.summary-card{background:var(--bg-card);padding:clamp(12px,2vh,24px);text-align:center}
+.summary-val{font-family:'Exo',sans-serif;font-size:clamp(28px,5vw,48px);font-weight:800;margin-bottom:6px;line-height:1}
+.summary-val.c{color:var(--success)}.summary-val.i{color:var(--accent)}.summary-val.p{color:var(--border)}
+.summary-label{font-size:var(--font-xs);letter-spacing:2px;color:var(--fg-muted)}
+.progress-list{background:var(--bg-card)}
+.progress-item{
+  display:flex;align-items:center;padding:var(--padding);border-bottom:1px solid var(--bg);
+  gap:var(--gap);min-height:44px;flex-wrap:wrap;
+}
+.progress-item:last-child{border-bottom:none}
+.progress-wn{font-size:var(--font-xs);letter-spacing:2px;color:var(--border);width:clamp(60px,8vw,80px);flex-shrink:0}
+.progress-st{font-size:var(--font-xs);letter-spacing:1px;color:var(--fg-muted);width:clamp(56px,7vw,70px);flex-shrink:0}
+.progress-title{flex:1;min-width:120px;font-family:'Exo',sans-serif;font-size:var(--font-sm);font-weight:600}
+.progress-status{display:flex;align-items:center;gap:6px;flex-shrink:0}
+
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--bg-card-alt)}::-webkit-scrollbar-thumb:active{background:var(--border)}
+
+/* ===== Responsive ===== */
+@media (min-width:768px){.hud-bracket{display:block}}
+@media (min-width:1025px){
+  .hud-bracket{display:block}.dir-weeks-grid{grid-template-columns:repeat(4,1fr)}.progress-item{flex-wrap:nowrap}
+  .content-body{padding:var(--padding-lg) clamp(40px,8vw,120px)}
+}
+@media (max-width:767px){
+  .navbar{height:44px;padding:0 12px;gap:6px}
+  .home-title{font-size:clamp(28px,12vw,48px)}.home-content{gap:14px}
+  .content-body{padding:20px 16px}.content-bottom{flex-direction:row;flex-wrap:nowrap;padding:10px 6px;gap:4px}
+  .content-bottom .btn{font-size:10px;padding:8px;min-width:auto;letter-spacing:0}
+  .dir-weeks-grid{grid-template-columns:repeat(2,1fr)}
+  .progress-item{flex-wrap:wrap;gap:4px;padding:10px}.progress-wn,.progress-st{width:auto}
+}
+@media (max-width:399px){
+  .dir-weeks-grid{grid-template-columns:1fr}
+  .content-bottom{flex-direction:column;align-items:center}
+  .content-bottom .btn{width:100%;justify-content:center}
+}
+</style>
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- HOME -->
+  <div class="page active" id="page-home">
+    <div class="home-page">
+      <div class="hud-bracket hud-tl"></div><div class="hud-bracket hud-tr"></div>
+      <div class="hud-bracket hud-bl"></div><div class="hud-bracket hud-br"></div>
+      <div class="home-content">
+        <div class="home-logo">🪄</div>
+        <h1 class="home-title">AI小魔法师</h1>
+        <p class="home-subtitle">3-6岁亲子共学AI启蒙课程平台</p>
+        <div class="home-divider"></div>
+        <p class="home-desc">12周系统课程 · 感知→对话→创作三阶段 · 亲子共学模式</p>
+        <button class="btn btn-primary home-cta" onclick="goToPage('directory')">▶ 开始学习</button>
+      </div>
+      <div class="home-reset" onclick="showReset()" title="重置所有进度">⚙ RESET</div>
+    </div>
+  </div>
+  <!-- Reset Modal -->
+  <div class="reset-modal" id="resetModal">
+    <div class="reset-box">
+      <span style="font-family:'Exo',sans-serif;font-size:var(--font-lg);font-weight:700;text-align:center;letter-spacing:2px">重置进度</span>
+      <span style="font-size:var(--font-xs);color:var(--fg-muted);text-align:center">此操作将清除所有学习进度，请输入密码</span>
+      <input type="password" id="resetPwd" placeholder="····" maxlength="8" autocomplete="off">
+      <span class="reset-error" id="resetError">密码错误</span>
+      <div style="display:flex;gap:var(--gap);margin-top:4px">
+        <button class="btn btn-outline" onclick="hideReset()" style="flex:1;justify-content:center">取 消</button>
+        <button class="btn btn-primary" onclick="doReset()" style="flex:1;justify-content:center;background:var(--danger);color:#fff">确认重置</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DIRECTORY -->
+  <div class="page" id="page-directory">
+    <nav class="navbar">
+      <button class="btn" onclick="goToPage('home')">← 返回</button>
+      <span class="nav-title">课程目录</span><div class="nav-spacer"></div>
+      <button class="btn btn-outline" onclick="goToPage('progress')">📊 进度</button>
+    </nav>
+    <div class="dir-body" id="dirBody"></div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="page" id="page-content">
+    <div class="content-page">
+      <nav class="navbar">
+        <span class="step-indicator" id="stepIndicator">STEP 01 / 06</span>
+        <div class="nav-spacer"></div>
+        <span class="nav-subtitle" id="courseTitle">第1周 · 魔法画笔</span>
+      </nav>
+      <div class="content-body" id="contentBody"></div>
+      <div class="content-bottom">
+        <button class="btn btn-outline" id="prevBtn" onclick="prevStep()">← 上一页</button>
+        <button class="btn" onclick="goToPage('directory')">📋 返回目录</button>
+        <button class="btn btn-primary" id="nextBtn" onclick="nextStep()">下一页 →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="page" id="page-progress">
+    <nav class="navbar">
+      <button class="btn" onclick="goToPage('directory')">← 返回目录</button>
+      <span class="nav-title">学习进度</span><div class="nav-spacer"></div>
+    </nav>
+    <div class="progress-body">
+      <div class="progress-summary">
+        <div class="summary-card"><div class="summary-val c" id="sc">2</div><div class="summary-label">已完成</div></div>
+        <div class="summary-card"><div class="summary-val i" id="si">1</div><div class="summary-label">进行中</div></div>
+        <div class="summary-card"><div class="summary-val p" id="sp">9</div><div class="summary-label">待开始</div></div>
+      </div>
+      <div class="progress-list" id="progressList"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ===== Reset functions =====
+function showReset(){ document.getElementById('resetModal').classList.add('show'); document.getElementById('resetPwd').focus();document.getElementById('resetError').style.display='none';document.getElementById('resetPwd').value=''; }
+function hideReset(){ document.getElementById('resetModal').classList.remove('show'); }
+function doReset(){
+  const pw = document.getElementById('resetPwd').value;
+  if(pw==='9527'){
+    try{localStorage.removeItem('aiMagicProgress')}catch(e){}
+    progress={};hideReset();goToPage('home');
+  }else{
+    document.getElementById('resetError').style.display='block';
+    document.getElementById('resetPwd').value='';
+    document.getElementById('resetPwd').focus();
+  }
+}
+
+// ===== Course Data =====
+var courseData={stages:[
+{id:1,name:"感知篇",subtitle:"「魔法盒子」里有什么",weeks:[1,2,3,4]},
+{id:2,name:"对话篇",subtitle:"我怎样才能让它做得更好",weeks:[5,6,7,8]},
+{id:3,name:"创作篇",subtitle:"我能和AI一起做出什么",weeks:[9,10,11,12]}
+],weeks:{
+1:{title:"魔法画笔",stage:1},2:{title:"故事大王",stage:1},3:{title:"AI猜猜乐",stage:1},4:{title:"魔法盒子的脾气",stage:1},
+5:{title:"从1个词到5个词",stage:2},6:{title:"我的超级英雄",stage:2},7:{title:"魔法食谱",stage:2},8:{title:"声音魔法师",stage:2},
+9:{title:"我的故事书(上)",stage:3},10:{title:"我的故事书(下)",stage:3},11:{title:"我的AI画展",stage:3},12:{title:"毕业典礼",stage:3}
+}};
+
+courseData.content={};
+
+// ===== WEEK 1 =====
+courseData.content[1]=[
+{icon:"🎯",label:"教学目标",html:'<h3>孩子 · 教学目标</h3><ul><li>能口述一个简单形象（≥1个特征）</li><li>看到AI生成结果后能说出"像/不像"</li></ul><h3>家长 · 教学目标</h3><ul><li>掌握AI绘画工具的基本操作（输入文字→生成图片）</li><li>学会"不干涉式引导"——等孩子说完再操作，不替孩子想</li></ul>'},
+{icon:"📦",label:"课前准备",html:'<h3>需要准备的物品</h3><div class="table-wrap"><table><tr><th>物品</th><th>说明</th></tr><tr><td>AI绘画工具</td><td>即梦/通义万相/豆包绘画（任选一个，提前注册好）</td></tr><tr><td>打印纸 ×3</td><td>A4彩色打印</td></tr><tr><td>水彩笔</td><td>线下涂色用</td></tr><tr><td>手机/平板支架</td><td>让孩子能看到屏幕但不碰到</td></tr></table></div><p><b>核心概念：</b>我说一个东西 → AI画出来</p><p><b>本周魔法词：</b>「画」「像」「颜色」</p><p><b>总时长：</b>约37分钟</p>'},
+{icon:"▶",label:"环节一",title:"魔法开场（5分钟）",html:'<div class="quote">"今天妈妈/爸爸给你介绍一个新朋友。它不是真人，是一个魔法盒子。你说一个东西，它就能画出来。想不想试试？"</div><div class="quote">（打开AI绘画工具，把输入框展示给孩子看）<br>"你看，这里有个框框——你把想画的东西告诉妈妈，妈妈帮你打字进去，然后魔法盒子就开始画画了。"</div><p><b>关键动作：</b>不要直接让孩子碰屏幕。建立"孩子口述→家长输入"的协作模式。</p><h4>常见问题处理</h4><ul><li>孩子抢手机 → "魔法盒子是大人操作的，你是小导演，你来指挥。导演不用自己扛摄像机对不对？"</li><li>孩子说"我不知道画什么" → 提示："你最喜欢的动物是什么？""你最想养什么宠物？"</li></ul>'},
+{icon:"▶",label:"环节二",title:"家长示范（3分钟）",html:'<p><b>家长操作：</b>家长自己口述一个例子，边输入边说出声——</p><div class="quote">"我先来试试——我想画 <b>一只戴红色帽子的小狗</b>。"</div><p>输入后点击生成，等待结果。展示给孩子。</p><h4>示范要点</h4><ul><li>示范时语速放慢，逐词说：先想"什么东西"→再想"什么颜色"→再想"有什么特别的地方"</li><li>展示结果后问孩子："你觉得怎么样？像不像一只戴红帽子的小狗？"</li></ul>'},
+{icon:"▶",label:"环节三",title:"孩子初次尝试——单特征描述（5分钟）",html:'<p><b>操作：</b>家长问"轮到你了，你想让魔法盒子画什么？"</p><h4>最少引导原则</h4><p>孩子说出一个词就可以。比如孩子说"兔子" → 家长就输入"兔子"，不做任何补充。让孩子先看到最简单的输出。</p><p>生成后问："这是你想要的兔子吗？"</p><div class="highlight">⚠️ <b>重要：</b>此时不要纠正或补充。如果孩子只说了一个词，就让他看到结果。这是为第5周的"细节越多越厉害"做认知铺垫。</div>'},
+{icon:"▶",label:"环节四",title:"孩子二次尝试——加1个特征（4分钟）",html:'<p><b>家长引导：</b></p><div class="quote">"刚才画的兔子是这样的。你想不想让它变个颜色？或者让它做一件好玩的事？"</div><p><b>引导方向：</b>颜色 → "什么颜色的兔子？" / 动作 → "兔子在干什么？"</p><p>孩子说出修改后（如"粉色的兔子"），家长输入，对比两次结果。</p><p><b>讨论：</b>"这两只兔子哪里不一样？你喜欢哪一只？"</p>'},
+{icon:"▶",label:"环节五",title:"线下延伸——给AI画作加魔法（20分钟）",html:'<ol><li><b>打印（2分钟）：</b>把上一轮生成的最佳结果彩色打印出来</li><li><b>涂色改造（12分钟）：</b>孩子用水彩笔在打印图上自由添加——给兔子画上胡萝卜、画上草地和太阳、画上兔子的一家</li><li><b>口述讲解（6分钟）：</b>孩子拿着完成的作品，讲给家长听"我加了什么、为什么加这些"</li></ol><div class="highlight"><b>教学意义：</b>这是关键环节——让孩子意识到"AI画的不是最终版，我还可以改造它"。建立"AI是素材，我才是创作者"的关系。</div>'},
+{icon:"✓",label:"收尾+评估",title:"本周收尾",html:'<div class="quote">"今天你和魔法盒子一起画了一只兔子，真厉害！下周我们让魔法盒子给我们讲故事，好不好？"</div><h4>课后延伸（本周内完成，非强制）</h4><ul><li>每天一次"魔法时刻"：刷牙时/吃饭前/睡觉前，让孩子随口说一个东西，家长快速输入AI画出来（控制在3分钟内），保持兴趣</li><li>把本周的作品贴在冰箱/墙上</li></ul><h4>本周评估</h4><div class="table-wrap"><table><tr><th>评估项</th><th>✓</th></tr><tr><td>孩子能口述一个完整的形象（≥"名词"）</td><td>□</td></tr><tr><td>孩子看到AI输出后有兴趣反应（非漠然/拒绝）</td><td>□</td></tr><tr><td>孩子参与线下涂色改造</td><td>□</td></tr><tr><td>家长未出现"替孩子决定画什么"</td><td>□</td></tr></table></div>'}
+];
+
+// ===== WEEK 2 =====
+courseData.content[2]=[
+{icon:"🎯",label:"教学目标",html:'<h3>孩子 · 教学目标</h3><ul><li>能想出一个包含"谁+在哪里"的故事开头</li><li>听完AI续写后能说出"喜欢/不喜欢"</li></ul><h3>家长 · 教学目标</h3><ul><li>掌握语音输入方式（避免打字打断孩子节奏）</li><li>学会用不同语调朗读AI生成的故事</li></ul>'},
+{icon:"📦",label:"课前准备",html:'<h3>需要准备的物品</h3><div class="table-wrap"><table><tr><th>物品</th><th>说明</th></tr><tr><td>AI对话工具</td><td>豆包/Kimi/通义千问（任选一个，开启语音输入）</td></tr><tr><td>积木/玩偶/毛绒玩具</td><td>角色扮演道具（≥5个）</td></tr><tr><td>手机支架</td><td>录音/语音输入用</td></tr></table></div><p><b>核心概念：</b>给AI一个开头 → 它会续写故事</p><p><b>本周魔法词：</b>「从前」「然后」「最后」</p><p><b>总时长：</b>约35分钟</p>'},
+{icon:"▶",label:"环节一",title:"故事导入（3分钟）",html:'<div class="quote">"上次魔法盒子帮我们画画，今天它要变身——变成故事大王！你说一个开头，它就能往下讲故事。"</div><div class="quote">"但是魔法盒子不知道你想要什么故事，所以你得告诉它——故事里有谁？他们在哪里？"</div>'},
+{icon:"▶",label:"环节二",title:"一起想开头（5分钟）",html:'<p><b>家长引导框架（用玩偶辅助）：</b></p><p>拿一个玩偶问孩子：</p><div class="quote">"你想让谁当故事的主角？"（孩子选一个玩偶）<br>"这个[兔子/小熊/恐龙]现在在哪里？"（森林里/海边/太空中/家里）</div><p>引导孩子说出：<b>主角 + 地点 + 一个事件</b>。例如："一只小兔子在森林里迷路了""一个小恐龙去超市买冰淇淋"</p><div class="highlight"><b>如果孩子卡住：</b>用选择题代替开放题——"是在森林里还是在大海里？""是开心的故事还是有点害怕的故事？"</div>'},
+{icon:"▶",label:"环节三",title:"AI生成故事（5分钟）",html:'<p><b>操作：</b>家长用语音输入孩子的开头+一句引导语：</p><div class="quote">"请根据以下开头续写一个3-5句话的短故事，适合3-6岁孩子听，语言温暖有趣，不要恐怖内容：[孩子的开头]。"</div><h4>朗读技巧</h4><p>AI生成后，家长用有变化的语调朗读——角色说话时变声、悬念处放慢、结尾处微笑。</p>'},
+{icon:"▶",label:"环节四",title:"故事讨论（4分钟）",html:'<div class="quote">"你喜欢这个故事吗？哪一段最好玩？"<br>"如果让你改，你想让故事怎么变？"</div><div class="highlight">不要追问太多问题——3-6岁的"讨论"控制在3-4个问题、4分钟以内。</div>'},
+{icon:"▶",label:"环节五",title:"线下延伸——故事小剧场（18分钟）",html:'<ol><li><b>角色分配（2分钟）：</b>孩子选一个玩偶当主角，家长选其他角色</li><li><b>排演（10分钟）：</b>根据AI生成的故事，用玩偶表演一遍。可以按孩子意愿"改剧本"——如果孩子说"兔子不应该跑，他应该躲起来"，就按孩子的来</li><li><b>正式演出（5分钟）：</b>用手机录下来</li><li><b>回看（1分钟）：</b>和孩子一起看录好的"小剧场"</li></ol><div class="highlight"><b>教学意义：</b>这是身体表达环节——AI生成的是文字，但3-6岁的理解通道是身体。把故事"演出来"比"听故事"的学习效率高得多。</div>'},
+{icon:"✓",label:"收尾+评估",title:"本周收尾",html:'<div class="quote">"下周魔法盒子要闭上眼睛——只听声音，不看画面。我们来玩"猜声音"游戏！"</div><h4>课后延伸</h4><ul><li>睡前"续写故事"：孩子说今天发生的事，家长用AI生成一个"今日故事"</li><li>把AI生成的文字打印贴在玩偶旁边，形成"角色档案"</li></ul><h4>本周评估</h4><div class="table-wrap"><table><tr><th>评估项</th><th>✓</th></tr><tr><td>孩子能说出主角+地点（不要求完整句子）</td><td>□</td></tr><tr><td>孩子听完故事后有情绪反应（笑/惊讶/追问）</td><td>□</td></tr><tr><td>孩子参与角色扮演（不要求全程，≥5分钟即可）</td><td>□</td></tr><tr><td>家长朗读时有语气变化</td><td>□</td></tr></table></div>'}
+];
+
+// ===== WEEK 3 =====
+courseData.content[3]=[
+{icon:"🎯",label:"教学目标",html:'<h3>第3周 · AI猜猜乐</h3><p><b>核心概念：</b>我描述一个东西→AI来猜——你说得越清楚，它猜得越准</p><p><b>魔法词：</b>「猜」「描述」「猜对了」</p><div class="highlight">💡 <b>设计说明：</b>原方案「听声辨物」依赖AI音效生成，当前AI音效工具效果不稳定，故替换为「AI猜猜乐」——利用AI的自然语言推理能力，可靠性高，且完美衔接第4周「说清楚」主题。</div><h3>孩子 · 教学目标</h3><ul><li>能用≥2个特征描述一个动物/物品</li><li>体验"我说得越清楚→AI猜得越准"</li></ul><h3>家长 · 教学目标</h3><ul><li>掌握"猜谜游戏"的引导节奏——先让孩子说，AI猜，猜不中再补充细节</li><li>学会克制"替孩子描述"的冲动，用"它还缺什么信息？"引导</li></ul>'},
+{icon:"📦",label:"课前准备",html:'<h3>需要准备的物品</h3><div class="table-wrap"><table><tr><th>物品</th><th>说明</th></tr><tr><td>AI对话工具</td><td>豆包/Kimi/通义千问（开启语音输入模式）</td></tr><tr><td>动物卡片×10</td><td>打印或手绘：猫/狗/大象/长颈鹿/兔子/鱼/鸟/恐龙/熊猫/青蛙</td></tr><tr><td>物品卡片×5</td><td>苹果/汽车/雨伞/书包/冰淇淋</td></tr><tr><td>描述提示卡</td><td>画四个图标：🔍长什么样？🎨什么颜色？📏大的小的？🏠在哪里见过？</td></tr><tr><td>小奖品</td><td>贴纸或小零食（可选）</td></tr></table></div><p><b>总时长：</b>约37分钟</p>'},
+{icon:"▶",label:"游戏规则",title:"课前向孩子说清楚",html:'<div class="quote">"今天魔法盒子要和你玩一个游戏——你心里想一个东西，但是<b>不告诉魔法盒子是什么</b>。你只描述它长什么样，让魔法盒子来猜！猜对了你就赢！"</div><p><b>两条规则：</b>❌不能直接说出这个东西的名字 ✅只能说它长什么样、什么颜色、在哪里见过、会做什么</p>'},
+{icon:"▶",label:"环节一",title:"家长示范——让AI猜大象（5分钟）",html:'<div class="quote">"我先来试试。我想一个东西，不告诉你是什么，只描述它。看魔法盒子能不能猜到！"</div><p><b>家长示范描述</b>（边说边语音输入AI）：</p><div class="quote">"请猜一猜我想的是什么动物——它很大很大，有四条像柱子一样的腿，有一个很长很长的鼻子，灰色的。住在草原上。它是什么动物？请直接回答动物名字。"</div><p>AI回答后："哇！它猜对了吗？……对了，是大象！因为我说了<b>五个</b>信息，所以魔法盒子一下就猜到了。好，轮到你了！"</p>'},
+{icon:"▶",label:"环节二",title:"孩子的回合——第一轮猜动物（10分钟）",html:'<p><b>操作流程</b>（循环2-3轮）：1.孩子从动物卡片中默默挑一张 2.孩子口述描述→家长语音输入AI 3.AI给出答案 4.亮出卡片验证</p><div class="table-wrap"><table><tr><th>如果只说1个特征</th><th>如果能说2-3个</th><th>如果能说≥4个</th></tr><tr><td>"它猜错了对不对？你再告诉它一点——它长什么样子？"</td><td>"好厉害！魔法盒子一下就猜对了，因为你描述得很清楚！"</td><td>"太厉害了！你说得好具体，魔法盒子猜得飞快！"</td></tr></table></div><p><b>示例：</b>孩子选了兔子→只说"喜欢吃胡萝卜"→AI猜错→"它长什么样子？"→"有长耳朵，白白的，会跳"→AI猜对！</p><p><b>关键话术：</b>卡壳时→翻出描述提示卡；猜对时→"因为你多说了长耳朵+白白的+会跳！"；猜错时→"没关系，我们多给它一点信息"</p>'},
+{icon:"▶",label:"环节三",title:"升级挑战——猜物品（8分钟）",html:'<div class="quote">"动物都猜完了？现在更难了——我们来猜东西！"</div><p>拿出物品卡片。关键差异：物品描述侧重于"功能"而非"外形"：</p><ul><li>功能："这个东西是干什么用的？"</li><li>场景："什么时候会用到它？"</li><li>材质："摸起来是什么感觉？"</li></ul><p><b>示例：</b>孩子选了雨伞→"下雨的时候用"→AI猜"雨衣/雨伞"→"可以打开，拿在手上，能挡住雨"→AI猜"雨伞"→对了！</p>'},
+{icon:"▶",label:"环节四",title:"角色互换——孩子来当AI（8分钟）",html:'<div class="quote">"现在反过来——魔法盒子来描述，你来猜！"</div><p>用AI生成一段动物描述，读给孩子猜。孩子猜中后反过来问："你刚才怎么猜到的？魔法盒子说了什么让你知道是[答案]的？"</p><div class="highlight"><b>教学意义：</b>角色互换让孩子从"描述者"切换到"猜测者"，体验"接收信息→推理"的过程，这是信息评估能力的萌芽。</div>'},
+{icon:"✓",label:"收尾+评估",title:"讨论+收尾（6分钟）",html:'<div class="quote">"你觉得为什么第一次魔法盒子没猜对，后来你多说了几句，它就猜对了？"</div><p>引导孩子总结：只说了1个信息→太模糊，猜不准。说了3-4个信息→很清楚，一下就猜对了。</p><div class="quote">"所以——你说得越清楚，魔法盒子就越厉害！对不对？"<br>"下周我们要学一个超级重要的魔法——<b>说清楚</b>！你猜会发生什么？"</div><p>🔑 这里直接埋下第4周的伏笔——孩子已经亲身体验了"模糊→猜错/具体→猜对"。</p><h4>本周评估</h4><div class="table-wrap"><table><tr><th>评估项</th><th>✓</th></tr><tr><td>孩子能描述≥2个特征（主动或在提示卡辅助下）</td><td>□</td></tr><tr><td>孩子参与了≥2轮猜谜（做描述者≥1轮 + 做猜测者≥1轮）</td><td>□</td></tr><tr><td>孩子体验到"描述越具体→猜得越准"</td><td>□</td></tr><tr><td>家长在游戏中使用描述提示卡辅助</td><td>□</td></tr></table></div>'}
+];
+
+// ===== WEEK 4 =====
+courseData.content[4]=[
+{icon:"🎯",label:"教学目标",html:'<h3>孩子 · 教学目标</h3><ul><li>观察到模糊指令→AI输出混乱</li><li>能用自己的话说出"因为我没说清楚"</li></ul><h3>家长 · 教学目标</h3><ul><li>掌握"故意犯错→对比→补救"的三段引导法</li><li>克制"直接告诉正确答案"的冲动</li></ul><div class="highlight">🔑 <b>本课是整套课程最关键的认知转折点：</b>在孩子形成"AI什么都会"的错觉之前，主动打破幻想。</div>'},
+{icon:"📦",label:"课前准备",html:'<h3>需要准备的物品</h3><div class="table-wrap"><table><tr><th>物品</th><th>说明</th></tr><tr><td>AI绘画工具</td><td>即梦/豆包绘画</td></tr><tr><td>打印纸 ×3</td><td>打印三轮对比结果</td></tr><tr><td>空白纸+胶棒</td><td>做"说清楚vs没说清楚"对比海报</td></tr></table></div><p><b>核心概念：</b>如果我不说清楚，AI会"乱画"——我需要把话说清楚</p><p><b>本周魔法词：</b>「说清楚」</p><p><b>总时长：</b>约35分钟</p>'},
+{icon:"▶",label:"环节一",title:"第一轮——故意模糊（5分钟）",html:'<p><b>家长操作：</b>输入一个极其模糊的指令——</p><div class="quote">"画一个东西"</div><p>生成结果后，问孩子：</p><div class="quote">"魔法盒子画了什么？……你也不知道对不对？那你想让它画什么？"</div><p>孩子可能说"我想画兔子"。</p><div class="highlight"><b>关键：</b>此时不要说"你应该在一开始就说兔子"——让孩子自己发现"我没说，所以它乱画"。</div>'},
+{icon:"▶",label:"环节二",title:"第二轮——说清楚了（3分钟）",html:'<div class="quote">"那这次我们告诉它——画兔子。"</div><p>输入"兔子"，生成结果。对比第一轮。问：</p><div class="quote">"这次它画对了吗？为什么这次画对了？——因为你说清楚了呀。"</div>'},
+{icon:"▶",label:"环节三",title:"第三轮——故意矛盾（4分钟）",html:'<p><b>家长操作：</b>输入一个自相矛盾的指令——</p><div class="quote">"画一只又像猫又像狗，又像鱼又像鸟的动物"</div><p>生成结果——大概率是一个奇怪的拼接生物。问孩子：</p><div class="quote">"这是什么？像猫吗？像狗吗？魔法盒子为什么画了一只奇怪的东西？"</div><p>引导孩子发现：<b>因为我说的话自己都不清楚</b>。</p>'},
+{icon:"▶",label:"环节四",title:"讨论——魔法盒子的秘密（10分钟）",html:'<p>用简单类比解释"说清楚"：</p><div class="quote">"魔法盒子就像一个很努力但有点笨笨的小助手——你让它做什么它就做什么，但你得说得很清楚很清楚。就像如果你跟妈妈说"给我那个"，妈妈也不知道你要什么对不对？但如果你说"给我那个红色的杯子"，妈妈就知道了。"</div><h4>核心隐喻</h4><div class="highlight">「魔法盒子像三岁小孩——你说什么它就做什么，不会猜你的心思。」</div>'},
+{icon:"▶",label:"环节五",title:"海报制作——说清楚vs没说清楚（13分钟）",html:'<ol><li><b>准备（2分钟）：</b>一张大白纸对折，左边写"没说清楚"，右边写"说清楚了"</li><li><b>贴图（6分钟）：</b>把三轮实验的打印图，分别贴在对应的列</li><li><b>标注（5分钟）：</b>家长帮孩子在每张图下面写一句话（孩子口述）：左边"我没说清楚→它乱画"，右边"我说清楚了→它画对了"</li></ol><p>把海报贴在墙上——作为后面8周的固定参考。</p>'},
+{icon:"✓",label:"收尾+评估",title:"本周收尾",html:'<div class="quote">"下次开始，我们要变成魔法词高手——学会用更多魔法词让魔法盒子画得越来越棒！"</div><h4>课后延伸</h4><ul><li>日常"说清楚"游戏：让孩子描述家里的物品让家长猜</li><li>"魔法盒子测试"：每天一次，故意说模糊指令→观察混乱→说清楚→对比</li></ul><h4>本周评估（关键节点）</h4><div class="table-wrap"><table><tr><th>评估项</th><th>✓</th></tr><tr><td>孩子观察到模糊/矛盾指令导致AI输出异常</td><td>□</td></tr><tr><td>孩子能重复"说清楚"这个关键词</td><td>□</td></tr><tr><td>孩子参与"说清楚vs没说清楚"海报制作</td><td>□</td></tr><tr><td>家长未在环节一中提前纠正（让孩子自己发现）</td><td>□</td></tr></table></div>'}
+];
+
+// ===== WEEKS 5-12 (new content from updated teaching plan) =====
+courseData.content[5]=[
+{icon:"🎯",label:"教学目标",html:'<h3>第5周 · 从1个词到5个词</h3><p><b>核心概念：</b>魔法词越多（细节越多），AI做得越好</p><p><b>魔法词五要素：</b>颜色 → 大小 → 动作 → 地点 → 伙伴</p><p>📌 本周是"提示词能力"的第一次正式突破：从单一描述到多要素组合。</p><h3>孩子目标</h3><ul><li>能从1个词逐步扩展到≥3个特征来描述</li><li>直观理解"细节越多→结果越好"</li></ul><h3>家长目标</h3><ul><li>掌握"分层递进演示法"——每轮只加1个细节</li><li>会用"魔法词卡片"作为视觉提示</li></ul>'},
+{icon:"📦",label:"课前准备",html:'<div class="table-wrap"><table><tr><th>物品</th><th>说明</th></tr><tr><td>AI绘画工具</td><td>即梦/豆包绘画</td></tr><tr><td>魔法词卡片×5</td><td>分别写/画：颜色🎨、大小📏、动作🏃、地点📍、伙伴👫</td></tr><tr><td>打印纸×5</td><td>打印五轮对比结果</td></tr><tr><td>主题卡</td><td>准备3个备选主题："小狗""房子""机器人"</td></tr></table></div><p><b>总时长：</b>约35分钟</p>'},
+{icon:"▶",label:"环节一",title:"主题选择（2分钟）",html:'<div class="quote">"今天我们要做一个实验——让魔法盒子画同一个东西，但每次多用一个魔法词，看看会发生什么。你想让它画什么？"</div><p>拿出主题卡，让孩子三选一：🐶小狗 / 🏠房子 / 🤖机器人</p>'},
+{icon:"▶",label:"环节二",title:"五轮递进实验（10分钟）",html:'<h4>实验流程（每轮2分钟×5轮）</h4><div class="table-wrap"><table><tr><th>轮次</th><th>输入</th><th>魔法词</th><th>话术</th></tr><tr><td>第1轮</td><td>"小狗"</td><td>0个</td><td>"先让它画——小狗"</td></tr><tr><td>第2轮</td><td>"白色小狗"</td><td>颜色🎨</td><td>"加上一个魔法词——什么颜色？"</td></tr><tr><td>第3轮</td><td>"白色小狗在追蝴蝶"</td><td>动作🏃</td><td>"再加一个——在干什么？"</td></tr><tr><td>第4轮</td><td>"白色小狗在草地上追蝴蝶"</td><td>地点📍</td><td>"再加一个——在哪里？"</td></tr><tr><td>第5轮</td><td>"白色小狗在草地上追蝴蝶，旁边有一只小鸟"</td><td>伙伴👫</td><td>"再加一个——旁边有谁？"</td></tr></table></div><p>每轮生成后把图片排成一列，形成"1词→5词"的视觉阶梯。</p>'},
+{icon:"▶",label:"环节三",title:"五幅画的进化（8分钟）",html:'<p>把五幅画按顺序贴在桌上或墙上，从左到右。</p><div class="quote">"你看——只说"小狗"的时候，魔法盒子画了这样。然后我们说"白色"——变成白色了。然后说"追蝴蝶"——它在跑了。然后说"在草地上"——有草地了。然后说"有小鸟"——小鸟也来了。"<br><br><b>"魔法词越多 → 魔法盒子画得越棒！"</b></div><p>让孩子指认："哪一幅最漂亮？为什么？因为它有最多的魔法词！"</p>'},
+{icon:"▶",label:"环节四",title:"魔法词卡片练习（10分钟）",html:'<p>把五张魔法词卡片给孩子。家长出一个新主题（"画一个公主"/"画一辆车"），让孩子用卡片提示来描述——不要求顺序，不要求五个全用，能用几张用几张。目标是从"只想到1个"进步到"想到≥3个"。</p>'},
+{icon:"✓",label:"收尾+评估",title:"总结——魔法词越多越厉害（5分钟）",html:'<div class="quote">"今天我们学了一个超厉害的魔法——魔法词越多，魔法盒子画得越好！以后你每次想让它画什么，就想想——还有什么魔法词可以加上？什么颜色？在哪里？在干什么？旁边有谁？"</div><h4>下周预告</h4><div class="quote">"下周我们要用魔法词创造属于你自己的超级英雄！"</div><h4>本周评估</h4><div class="table-wrap"><table><tr><th>评估项</th><th>✓</th></tr><tr><td>孩子能说出≥3个特征（在魔法词卡片辅助下）</td><td>□</td></tr><tr><td>孩子看到五轮对比后表现出"越后面越好"的认知</td><td>□</td></tr><tr><td>孩子至少一次主动说"再加一个魔法词"</td><td>□</td></tr><tr><td>家长使用了魔法词卡片作为视觉提示</td><td>□</td></tr></table></div>'}
+];
+
+courseData.content[6]=[
+{icon:"🎯",label:"教学目标",html:'<h3>第6周 · 我的超级英雄</h3><p><b>核心概念：</b>角色设计——用AI创造一个完整的原创角色</p><p><b>魔法词：</b>「名字」「超能力」「伙伴」「敌人」</p><h3>孩子目标</h3><ul><li>能设计一个包含≥4要素的角色（名字+样子+能力+伙伴）</li><li>能用积木/乐高先搭出角色雏形，再让AI画</li></ul><h3>家长目标</h3><ul><li>掌握"先手工→再AI"的创作顺序（避免AI主导想象力）</li><li>学会用"这个英雄有什么故事？"代替"这个英雄有什么功能？"</li></ul>'},
+{icon:"📦",label:"课前准备",html:'<div class="table-wrap"><table><tr><th>物品</th><th>说明</th></tr><tr><td>积木/乐高</td><td>≥20块，足够搭一个5-8cm高的人形</td></tr><tr><td>AI绘画+AI对话工具</td><td></td></tr><tr><td>硬卡纸×1+剪刀+橡皮筋</td><td>做英雄面具</td></tr><tr><td>彩笔</td><td></td></tr></table></div><p><b>总时长：</b>约38分钟</p>'},
+{icon:"▶",label:"环节一",title:"搭积木英雄（8分钟）",html:'<div class="quote">"今天你要创造一个超级英雄！但先让魔法盒子等等——我们先用自己的手来搭。"</div><p><b>引导框架：</b></p><ol><li>"你的英雄长什么样？——高的还是矮的？什么颜色？有披风吗？"</li><li>"他有什么超能力？——会飞？力大无穷？能隐身？"</li><li>"他的伙伴是谁？"</li><li>"他最大的敌人是谁？"</li></ol><div class="highlight">⚠️ <b>为什么先搭积木：</b>3-6岁在积木上的创造力远大于语言。先动手能激活想象力，再转语言描述。如果直接用AI，孩子会看着空白输入框发愣。</div>'},
+{icon:"▶",label:"环节二",title:"用AI画出英雄（10分钟）",html:'<p><b>操作：</b>家长根据孩子搭的积木+口述，输入AI绘画：</p><div class="quote">"一个[颜色]的超级英雄，[特征描述]，有[超能力]，和他的伙伴[伙伴]，正在和[敌人]战斗。儿童插画风格，色彩鲜艳。"</div><p>生成后，对比AI画的英雄和孩子搭的积木英雄："像不像？哪里像？哪里不一样？"</p>'},
+{icon:"▶",label:"环节三",title:"AI给英雄写故事（5分钟）",html:'<div class="quote">"英雄得有故事。我们让魔法盒子给你的英雄写一个英雄故事。"</div><p><b>输入示例：</b>"请为一个叫[英雄名]的超级英雄写一个3-5句话的英雄故事。他是一个[样子描述]的英雄，他的超能力是[能力]，他的伙伴是[伙伴]，他最大的敌人是[敌人]。故事温暖有趣，适合3-6岁孩子。"家长朗读故事。</p>'},
+{icon:"✓",label:"收尾+评估",title:"做英雄面具（15分钟）",html:'<p>用硬卡纸做简易英雄面具——画上英雄的标志，剪出眼睛洞，穿上橡皮筋。孩子戴上自己英雄的面具，家长说："XX侠，你的第一个任务是什么？"让孩子即兴表演——不设剧本，完全自由发挥。</p><h4>本周评估</h4><div class="table-wrap"><table><tr><th>评估项</th><th>✓</th></tr><tr><td>孩子先搭积木再让AI画（未跳过动手环节）</td><td>□</td></tr><tr><td>孩子能给英雄取名</td><td>□</td></tr><tr><td>孩子戴面具即兴表演≥2分钟</td><td>□</td></tr><tr><td>家长在AI输入时使用了孩子原话（未改编）</td><td>□</td></tr></table></div>'}
+];
+
+courseData.content[7]=[
+{icon:"🎯",label:"教学目标",html:'<h3>第7周 · 魔法食谱</h3><p><b>核心概念：</b>AI不只是玩的——它还能帮我们做真实的事</p><p><b>魔法词：</b>「帮忙」「真的」</p><p>🍳 本课是课程中第一个"AI→现实"的桥接：让孩子意识到AI可以辅助日常生活。</p><h3>孩子目标</h3><ul><li>AI生成的食谱能在家长辅助下实际做成食物</li><li>体验完整"AI建议→实际操作→品尝/评价"闭环</li></ul><h3>家长目标</h3><ul><li>选择安全、简单的食谱（不涉及刀、火、烫的操作）</li><li>在操作中强调"AI说的不一定全对"（铺垫批判性思维）</li></ul>'},
+{icon:"📦",label:"课前准备",html:'<div class="table-wrap"><table><tr><th>物品</th><th>说明</th></tr><tr><td>AI对话工具</td><td>语音输入</td></tr><tr><td>食材</td><td>选择无需用刀/火的——水果、酸奶、饼干、面包、果酱等</td></tr><tr><td>儿童围裙</td><td></td></tr><tr><td>碗/盘子/勺子</td><td></td></tr></table></div><p><b>总时长：</b>约38分钟</p>'},
+{icon:"▶",label:"环节一",title:"饿了怎么办？（3分钟）",html:'<div class="quote">"现在是下午茶时间——你想吃什么？但是我们家没有现成的点心，怎么办？让魔法盒子帮我们想一个！"</div>'},
+{icon:"▶",label:"环节二",title:"孩子描述需求，AI出食谱（10分钟）",html:'<p>引导孩子描述（用魔法词框架）：什么味道？什么样子？有什么？</p><p><b>AI prompt示例：</b></p><div class="quote">"请推荐一个适合3-6岁孩子和家长一起做的简易点心食谱。要求：不需要用刀、不需要开火、食材常见（水果/酸奶/饼干/面包类），步骤不超过4步。孩子想要[孩子原话描述]的点心。"</div>'},
+{icon:"▶",label:"环节三",title:"照AI食谱动手（20分钟）",html:'<div class="table-wrap"><table><tr><th>家长做</th><th>孩子做</th></tr><tr><td>打开包装、倒液体</td><td>摆放饼干/水果片</td></tr><tr><td>端热的东西（如有）</td><td>搅拌（不烫的材料）</td></tr><tr><td>切水果（如需要）</td><td>摆盘/装饰</td></tr></table></div><p>"AI说要放3勺酸奶——你觉得够不够？要不要多加一点？""AI说有4步，我们做到第几步了？"</p>'},
+{icon:"✓",label:"收尾+评估",title:"品尝与评价（5分钟）",html:'<div class="quote">"AI的食谱好吃吗？""如果下次再让AI想一个，你会给它什么新要求？""你觉得AI吃过这个吗？——它没吃过，它是猜的！所以有时它的食谱可能不好吃哦。"</div><div class="highlight">最后这句话是关键——"AI没吃过，是猜的"——为批判性思维埋下种子。</div><h4>本周评估</h4><div class="table-wrap"><table><tr><th>评估项</th><th>✓</th></tr><tr><td>孩子参与了≥1个动手步骤</td><td>□</td></tr><tr><td>孩子能说出想吃的点心的≥2个特征</td><td>□</td></tr><tr><td>吃完后孩子给了评价</td><td>□</td></tr><tr><td>家长在过程中提及"AI没吃过"的概念</td><td>□</td></tr></table></div>'}
+];
+
+courseData.content[8]=[
+{icon:"🎯",label:"教学目标",html:'<h3>第8周 · 声音魔法师</h3><p><b>核心概念：</b>AI能创作音乐——把我的想法变成一首歌</p><p><b>魔法词：</b>「唱」「歌」「歌词」</p><h3>孩子目标</h3><ul><li>能口述一段≥3句的简单"歌词"（主题+押韵不要求）</li><li>随着AI生成的歌曲做身体律动/舞蹈</li></ul><h3>家长目标</h3><ul><li>掌握AI音乐生成工具的基本操作</li><li>鼓励但不强迫表演——有些孩子内向，观看也是参与</li></ul>'},
+{icon:"📦",label:"课前准备",html:'<div class="table-wrap"><table><tr><th>物品</th><th>说明</th></tr><tr><td>AI音乐生成</td><td>Suno AI/即梦音频</td></tr><tr><td>手机录音/录像</td><td>录MV用</td></tr><tr><td>丝巾/彩带</td><td>跳舞道具</td></tr><tr><td>小乐器（可选）</td><td>沙锤、铃鼓、三角铁</td></tr></table></div><p><b>总时长：</b>约35分钟</p>'},
+{icon:"▶",label:"环节一",title:"回顾+引出（2分钟）",html:'<div class="quote">"魔法盒子会画画、会讲故事、会发出声音——你说它还会唱歌吗？""今天我们要让魔法盒子唱一首歌——歌是你写的！"</div>'},
+{icon:"▶",label:"环节二",title:"一起写歌词（8分钟）",html:'<p><b>三步引导法：</b>定主题→想画面→组织成歌词（家长帮整理，不追求押韵）</p><div class="highlight"><b>示例（孩子说"关于刷牙"）：</b><br>刷刷刷 刷刷刷<br>早上起来刷牙啦<br>上面刷刷 下面刷刷<br>白白的牙齿笑哈哈</div>'},
+{icon:"▶",label:"环节三",title:"听歌+律动（10分钟）",html:'<p>播放AI生成的歌曲2-3遍：第1遍安静听→第2遍带着做简单动作→第3遍自由律动，给丝巾/彩带挥舞。</p>'},
+{icon:"✓",label:"收尾+评估",title:"MV+总结（15分钟）",html:'<p>用手机录一段视频——孩子跟着自己的AI歌曲跳舞/表演，回放给孩子看："这是你的第一支MV！"</p><div class="quote">"我们把魔法盒子的本领数一数——它会画画、讲故事、玩猜谜、还会唱歌！你已经是一个小魔法师了。下周开始，我们要用这些本领一起创造一个大作品——属于你自己的故事书！"</div><h4>本周评估</h4><div class="table-wrap"><table><tr><th>评估项</th><th>✓</th></tr><tr><td>孩子能说出歌的主题+≥2个意象</td><td>□</td></tr><tr><td>孩子听到AI歌曲后有兴趣反应</td><td>□</td></tr><tr><td>孩子参与了MV录制</td><td>□</td></tr><tr><td>家长未强迫内向孩子表演</td><td>□</td></tr></table></div>'}
+];
+
+courseData.content[9]=[
+{icon:"🎯",label:"教学目标",html:'<h3>第9周 · 我的故事书（上）</h3><p><b>核心概念：</b>综合运用AI——用对话AI写故事 + 用绘画AI配图</p><p><b>魔法词：</b>「故事书」</p><h3>孩子目标</h3><ul><li>能主导一个4-6页的故事创编</li><li>为每页故事口述配图需求</li></ul><h3>家长目标</h3><ul><li>掌握AI对话（写故事）+AI绘画（配图）的串联流程</li><li>克制"替孩子完善故事"的冲动</li></ul>'},
+{icon:"📦",label:"课前准备",html:'<div class="table-wrap"><table><tr><th>物品</th><th>说明</th></tr><tr><td>空白绘本（12页，A5大小）</td><td>提前准备或自制</td></tr><tr><td>AI对话+AI绘画工具</td><td></td></tr><tr><td>打印纸×6+彩色打印机</td><td></td></tr><tr><td>胶棒</td><td>贴图用</td></tr></table></div><p><b>总时长：</b>约42分钟</p>'},
+{icon:"▶",label:"环节一",title:"项目启动（3分钟）",html:'<div class="quote">"我们已经玩了三周的魔法盒子——画画、故事、猜谜、唱歌。现在我们要用所有这些本领，做一件真正的大事——"（拿出空白绘本）"做一本完全属于你自己的故事书！封面写你的名字！"</div>'},
+{icon:"▶",label:"环节二",title:"确定故事主题与角色（8分钟）",html:'<p><b>三步定故事：</b>主角是谁？要去哪里？发生了什么？</p><p>家长记录——用最简单的故事结构：</p><ol><li>第1页：介绍主角</li><li>第2页：遇到问题</li><li>第3页：努力解决</li><li>第4页：遇到了帮手</li><li>第5页：解决问题</li><li>第6页：快乐结局</li></ol><div class="highlight">⚠️ 不要求逻辑严密。3-6岁的故事可以跳跃、重复。家长的角色是<b>记录员</b>，不是编辑。</div>'},
+{icon:"▶",label:"环节三",title:"AI续写故事（5分钟）",html:'<p>把孩子口述的故事框架输入AI：</p><div class="quote">"请根据以下框架，续写一个儿童绘本故事，每页2-3句话，语言简单温暖，适合3-6岁：[粘贴孩子口述框架]。总共6页。"</div>'},
+{icon:"✓",label:"收尾+评估",title:"配图+贴图（26分钟）",html:'<p>逐页生成配图（12分钟）+ 贴图排序（14分钟）：孩子把6张配图按故事顺序贴在空白绘本上。如果孩子想调换顺序——让他调。这是他的书。</p><h4>本周评估</h4><div class="table-wrap"><table><tr><th>评估项</th><th>✓</th></tr><tr><td>孩子能确定主角+地点+事件</td><td>□</td></tr><tr><td>孩子为每页口述了配图需求</td><td>□</td></tr><tr><td>孩子参与贴图（自己动手贴≥4页）</td><td>□</td></tr><tr><td>家长未修改孩子的故事逻辑</td><td>□</td></tr></table></div>'}
+];
+
+courseData.content[10]=[
+{icon:"🎯",label:"教学目标",html:'<h3>第10周 · 我的故事书（下）</h3><p><b>核心概念：</b>完成就是最大的成就——把散落的素材变成一本书</p><p><b>魔法词：</b>「完成」「我的书」</p>'},
+{icon:"📦",label:"课前准备",html:'<div class="table-wrap"><table><tr><th>物品</th><th>说明</th></tr><tr><td>上周贴好图的空白绘本</td><td></td></tr><tr><td>彩笔</td><td>装饰封面用</td></tr><tr><td>手机录音</td><td></td></tr><tr><td>打孔器+丝带/毛线</td><td>装订用</td></tr></table></div><p><b>总时长：</b>约38分钟</p>'},
+{icon:"▶",label:"环节一",title:"装饰封面（8分钟）",html:'<div class="quote">"书还没有封面呢——你想让你的书叫什么名字？"</div><p>孩子口述书名，家长帮写在封面上（大字），孩子用水彩笔装饰——画星星、贴贴纸、涂色。封面要素：书名+作者名（孩子名字）+插画（孩子手绘）。</p>'},
+{icon:"▶",label:"环节二",title:"给书配音（12分钟）",html:'<p>一页一页来：孩子拿着书，对着手机录音，用自己的话"读"故事。如果孩子不愿意自己读：家长读一页、孩子读一页，交替。可选：用AI语音变声功能增加趣味性。</p>'},
+{icon:"▶",label:"环节三",title:"装订成册（8分钟）",html:'<p>用打孔器在书脊打3个孔，穿毛线/丝带，打蝴蝶结。</p><div class="quote">"这是你的第一本书！摸一摸——厚不厚？这是你自己做的。"</div>'},
+{icon:"✓",label:"收尾+评估",title:"新书发布会（10分钟）",html:'<p>家里布置一个"发布台"——孩子站在前面，向家人"发布"自己的书：</p><ol><li>介绍书名和作者</li><li>翻页讲解（选2-3页最喜欢的）</li><li>家人鼓掌、提问</li></ol><div class="highlight">拍照片留念——这是整套课程最重要的"高光时刻"。</div><h4>本周评估</h4><div class="table-wrap"><table><tr><th>评估项</th><th>✓</th></tr><tr><td>孩子给书起了名字</td><td>□</td></tr><tr><td>孩子参与了录音（≥2页）</td><td>□</td></tr><tr><td>孩子自己动手完成装订（≥1步）</td><td>□</td></tr><tr><td>孩子在发布会上讲解≥1页</td><td>□</td></tr></table></div>'}
+];
+
+courseData.content[11]=[
+{icon:"🎯",label:"教学目标",html:'<h3>第11周 · 我的AI画展</h3><p><b>核心概念：</b>回顾与反思——我用AI做了什么？我最喜欢什么？</p><p><b>魔法词：</b>「最喜欢」「为什么」</p><h3>孩子目标</h3><ul><li>从过去11周的作品中选出最满意的5-8幅</li><li>为每幅作品口述"为什么喜欢"</li></ul><h3>家长目标</h3><ul><li>帮助孩子建立"回顾-选择-表达"的反思习惯</li><li>记录孩子的原话（不润色）</li></ul>'},
+{icon:"📦",label:"课前准备",html:'<div class="table-wrap"><table><tr><th>物品</th><th>说明</th></tr><tr><td>前11周所有AI作品</td><td>电子版+打印版</td></tr><tr><td>AI绘画工具</td><td>新创作1-2幅</td></tr><tr><td>便签纸</td><td>解说词用</td></tr><tr><td>墙面/展板</td><td>布置画展用</td></tr></table></div><p><b>总时长：</b>约38分钟</p>'},
+{icon:"▶",label:"环节一",title:"回顾——翻看AI作品集（10分钟）",html:'<p>把所有打印的作品铺在桌上/地板上，按时间顺序排列。</p><div class="quote">"你看——这是第1周你画的兔子！这是你的超级英雄！这是你的故事书配图！""我们已经和魔法盒子一起做了好多东西啊。"</div><p>让孩子自由翻看。观察孩子在哪幅面前停留更久。</p>'},
+{icon:"▶",label:"环节二",title:"策展——选出最满意的（8分钟）",html:'<div class="quote">"如果我们要办一个画展，只能展出5幅——你选哪5幅？"</div><p>如果他选的不按常理出牌（比如选了第4周的"乱画"），问："这幅画得乱糟糟的，你为什么选它？"——他的回答可能是"因为它好笑"——这就对了。审美没有标准答案。</p>'},
+{icon:"▶",label:"环节三",title:"写解说词（8分钟）",html:'<p>每幅展品旁边贴一张便签，家长帮写解说词（孩子口述、家长执笔）："[作品名]，作者：[孩子名]，年龄：[X]岁""我画的是……我喜欢这幅画是因为……"</p><div class="highlight">家长原封不动记录孩子的原话，不润色。比如："我喜欢这幅因为兔子在飞，兔子本来不会飞但是我让它飞了。"——这种"不合理"的表达才是这个年龄最珍贵的。</div>'},
+{icon:"✓",label:"收尾+评估",title:"压轴创作+布展（12分钟）",html:'<div class="quote">"画展还缺一幅最新的作品。你今天最想让魔法盒子画什么？"</div><p>生成后加入画展。最后在家里的墙面/门板上布置画展：排列→贴解说词→拉一根绳子当"展览入口"。</p><h4>本周评估</h4><div class="table-wrap"><table><tr><th>评估项</th><th>✓</th></tr><tr><td>孩子能选出≥5幅作品</td><td>□</td></tr><tr><td>孩子为≥3幅作品口述了"为什么喜欢"</td><td>□</td></tr><tr><td>孩子参与了布展（≥1步）</td><td>□</td></tr><tr><td>家长记录了孩子的原话（未润色）</td><td>□</td></tr></table></div>'}
+];
+
+courseData.content[12]=[
+{icon:"🎯",label:"教学目标",html:'<h3>第12周 · 毕业典礼</h3><p><b>核心概念：</b>结业仪式——我学会了什么？我接下来还想学什么？</p><p><b>魔法词：</b>「毕业」「魔法师」</p><h3>孩子目标</h3><ul><li>在家人/亲友面前展示自己的AI作品和故事书</li><li>完成"毕业挑战"——现场指挥AI创作</li></ul><h3>家长目标</h3><ul><li>组织小型家庭毕业典礼</li><li>给孩子写一封简短的"毕业信"（手写）</li></ul>'},
+{icon:"📦",label:"课前准备",html:'<div class="table-wrap"><table><tr><th>物品</th><th>说明</th></tr><tr><td>AI绘画工具</td><td>毕业挑战用</td></tr><tr><td>"AI小魔法师"证书</td><td>提前制作或购买</td></tr><tr><td>毕业礼物</td><td>12周作品集成册+家长手写信</td></tr><tr><td>画展+故事书</td><td>前两周的成果</td></tr><tr><td>手机录像</td><td></td></tr></table></div><p><b>总时长：</b>约40分钟</p>'},
+{icon:"▶",label:"环节一",title:"欢迎致辞（2分钟）",html:'<div class="quote">"欢迎大家来到[孩子名]的AI小魔法师毕业典礼！在过去12周里，[孩子名]学会了用魔法词指挥AI画画、让AI讲故事、和AI一起唱歌、创作了自己的故事书和画展。今天，我们要正式授予他/她"AI小魔法师"称号！"</div>'},
+{icon:"▶",label:"环节二",title:"作品展示与讲解（12分钟）",html:'<p>孩子站在画展前，向家人/亲友讲解自己的作品。<b>不要指定讲哪幅</b>——让孩子自己走到最喜欢的作品前开始。</p>'},
+{icon:"▶",label:"环节三",title:"毕业挑战——现场魔法（10分钟）",html:'<p><b>挑战规则：</b>出题人给一个主题，孩子必须在30秒内说出≥3个细节（魔法词），家长输入AI生成，展示结果。成功→全场鼓掌通过！</p>'},
+{icon:"✓",label:"收尾+评估",title:"颁发证书+合影（13分钟）",html:'<h4>证书模板</h4><div class="highlight">🎓 AI小魔法师<br>兹证明 [孩子名] 已完成「AI小魔法师」启蒙课程全部12周学习，成功掌握以下魔法：<br>✨ 用魔法词指挥AI画画<br>✨ 让AI讲你想听的故事<br>✨ 和AI玩猜猜乐<br>✨ 知道"说清楚"魔法盒子才会做对<br>✨ 和AI一起创作了一本故事书<br>✨ 举办了属于自己的AI画展<br>特此授予「AI小魔法师」称号！</div><p>全场合影。把12周所有AI作品装订成册，加上"毕业合影"作为封面，交付给孩子。</p><h4>终期评估</h4><div class="table-wrap"><table><tr><th>评估项</th><th>✓</th></tr><tr><td>孩子在展示环节讲解了≥2幅作品</td><td>□</td></tr><tr><td>毕业挑战中能在30秒内说出≥3个细节</td><td>□</td></tr><tr><td>孩子收到证书和作品集后有兴趣反应</td><td>□</td></tr><tr><td>家长写了毕业信并当众朗读</td><td>□</td></tr></table></div>'}
+];
+
+// ===== State =====
+var currentPage='home',currentWeek=3,currentStep=0,progress={};
+
+function goToPage(p){
+  document.querySelectorAll('.page').forEach(function(x){x.classList.remove('active')});
+  var t=document.getElementById('page-'+p);if(t)t.classList.add('active');
+  currentPage=p;
+  if(p==='directory')renderDirectory();
+  if(p==='progress')renderProgress();
+  if(p==='content')renderContent();
+}
+function getProgress(){
+  try{var s=localStorage.getItem('aiMagicProgress');return s?JSON.parse(s):{};}catch(e){return {}}
+}
+function setProgress(wk,st){
+  progress=getProgress();progress[wk]=st;
+  try{localStorage.setItem('aiMagicProgress',JSON.stringify(progress));}catch(e){}
+}
+function getWeekStatus(wk){
+  progress=getProgress();
+  if(progress[wk]==='completed')return'completed';
+  if(progress[wk]==='inprogress')return'inprogress';
+  if(wk>1&&progress[(wk-1)]!=='completed')return'locked';
+  return'pending';
+}
+function renderDirectory(){
+  var c=document.getElementById('dirBody');if(!c)return;var h='';
+  courseData.stages.forEach(function(st,idx){
+    var exp=idx===0;
+    h+='<div class="dir-section'+(exp?' expanded':'')+'">';
+    h+='<div class="dir-header" onclick="toggleStage(this)">';
+    h+='<span class="dir-stage-num">0'+st.id+'</span>';
+    h+='<span class="dir-stage-title">'+st.name+' · '+st.subtitle+'</span>';
+    h+='<span class="dir-stage-weeks">第'+st.weeks[0]+'-'+st.weeks[st.weeks.length-1]+'周</span>';
+    h+='<span class="dir-arrow">▼</span></div><div class="dir-weeks-grid">';
+    st.weeks.forEach(function(wk){
+      var wd=courseData.weeks[wk],status=getWeekStatus(wk);
+      var locked=status==='locked';
+      h+='<div class="week-card'+(status==='inprogress'?' active':'')+(locked?' week-locked':'')+'"'+(locked?'':' onclick="startWeek('+wk+')"')+'>';
+      h+='<div class="week-num">WEEK '+String(wk).padStart(2,'0')+'</div>';
+      h+='<div class="week-card-title">'+wd.title+'</div>';
+      h+='<div class="week-status"><div class="week-status-dot dot-'+status+'"></div>';
+      h+='<span class="status-'+status+'">'+(status==='completed'?'COMPLETED':status==='inprogress'?'IN PROGRESS':status==='locked'?'🔒 LOCKED':'PENDING')+'</span></div></div>';
+    });
+    h+='</div></div>';
+  });
+  c.innerHTML=h;
+}
+function toggleStage(el){
+  var sec=el.parentElement,exp=sec.classList.contains('expanded'),grid=sec.querySelector('.dir-weeks-grid');
+  if(!exp){sec.classList.add('expanded');grid.style.maxHeight=grid.scrollHeight+'px';setTimeout(function(){grid.style.maxHeight='none'},400);}
+  else{grid.style.maxHeight=grid.scrollHeight+'px';requestAnimationFrame(function(){grid.style.maxHeight='0px';sec.classList.remove('expanded')})}
+}
+function startWeek(wk){if(getWeekStatus(wk)==='locked')return;currentWeek=wk;currentStep=0;setProgress(wk,'inprogress');goToPage('content')}
+function renderContent(){
+  var content=courseData.content[currentWeek];if(!content)return;
+  var step=content[currentStep],total=content.length;
+  document.getElementById('stepIndicator').textContent='STEP '+String(currentStep+1).padStart(2,'0')+' / '+String(total).padStart(2,'0');
+  document.getElementById('courseTitle').textContent='第'+currentWeek+'周 · '+courseData.weeks[currentWeek].title;
+
+  var body=document.getElementById('contentBody');
+  var h='<div class="content-step-header">';
+  h+='<div class="content-icon">'+step.icon+'</div>';
+  h+='<div class="content-step-info">';
+  h+='<div class="content-label">'+step.label+'</div>';
+  if(step.title)h+='<h2 class="content-title">'+step.title+'</h2>';
+  h+='</div></div>';
+  h+='<div class="content-bar"><div class="content-bar-fill" style="width:'+((currentStep+1)/total*100)+'%"></div></div>';
+  h+='<div class="content-full">'+step.html+'</div>';
+  body.innerHTML=h;
+  body.scrollTop=0;
+
+  var prev=document.getElementById('prevBtn'),next=document.getElementById('nextBtn');
+  prev.disabled=currentStep===0;prev.classList.toggle('btn-disabled',currentStep===0);
+  next.textContent=currentStep===total-1?'完成 ✓':'下一页 →';
+}
+function nextStep(){
+  var content=courseData.content[currentWeek];
+  if(currentStep<content.length-1){currentStep++;renderContent()}
+  else{setProgress(currentWeek,'completed');goToPage('directory')}
+}
+function prevStep(){if(currentStep>0){currentStep--;renderContent()}}
+function renderProgress(){
+  var l=document.getElementById('progressList');if(!l)return;
+  var c=0,i=0,p=0,h='';
+  for(var w=1;w<=12;w++){
+    var wd=courseData.weeks[w],stg=courseData.stages.find(function(s){return s.id===wd.stage}),st=getWeekStatus(w);
+    if(st==='completed')c++;else if(st==='inprogress')i++;else p++;
+    h+='<div class="progress-item">';
+    h+='<span class="progress-wn">WEEK '+String(w).padStart(2,'0')+'</span>';
+    h+='<span class="progress-st">'+stg.name+'</span>';
+    h+='<span class="progress-title">'+wd.title+'</span>';
+    h+='<div class="progress-status"><div class="week-status-dot dot-'+st+'"></div>';
+    h+='<span class="status-'+st+'">'+(st==='completed'?'已完成':st==='inprogress'?'进行中':st==='locked'?'🔒 待解锁':'待开始')+'</span></div></div>';
+  }
+  document.getElementById('sc').textContent=c;document.getElementById('si').textContent=i;document.getElementById('sp').textContent=p;
+  l.innerHTML=h;
+}
+
+document.addEventListener('keydown',function(e){
+  if(currentPage==='content'){
+    if(e.key==='ArrowLeft'||e.key==='ArrowUp')prevStep();
+    if(e.key==='ArrowRight'||e.key==='ArrowDown')nextStep();
+    if(e.key==='Escape')goToPage('directory');
+  }
+});
+var tx=0,ty=0;
+document.addEventListener('touchstart',function(e){tx=e.touches[0].clientX;ty=e.touches[0].clientY},{passive:true});
+document.addEventListener('touchend',function(e){
+  if(currentPage!=='content')return;
+  var dx=tx-e.changedTouches[0].clientX,dy=ty-e.changedTouches[0].clientY;
+  if(Math.abs(dx)>Math.abs(dy)&&Math.abs(dx)>50){if(dx>0)nextStep();else prevStep()}
+});
+progress=getProgress();
+</script>
+</body>
+</html>
